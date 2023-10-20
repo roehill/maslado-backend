@@ -1,0 +1,125 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400;700;900&display=swap"
+      rel="stylesheet"
+    />
+    <style type="text/css">
+      body {
+        margin: 0;
+        background-color: #e8e8e8;
+      }
+      table {
+        border-spacing: 0;
+      }
+      td {
+        padding: 0;
+      }
+      img {
+        border: 0;
+      }
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #e8e8e8;
+        padding-bottom: 60px;
+      }
+      .main {
+        background-color: #fff;
+        margin: 0 auto;
+        padding-bottom: 60px;
+        width: 100%;
+        max-width: 600px;
+        border-spacing: 0;
+        font-family: "Montserrat", sans-serif;
+        color: #151414;
+      }
+      .verify-button {
+        display: block;
+        margin: 20px 0;
+        width: 210px;
+        height: 46px;
+        line-height: 46px;
+        text-align: center;
+        background: #0096ea;
+        border-radius: 2px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        border: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <table class="main">
+        <!-- TOP BORDER -->
+        <tr>
+          <td height="8" style="background-color: #151414"></td>
+        </tr>
+        <!-- LOGO SECTION -->
+        <tr>
+          <td>
+            <table width="100%">
+              <a href="https://easyselection.pl/" target="_blank">
+                <img
+                  style="padding: 40px 10px 10px 10px"
+                  src="cid:imagename"
+                  alt="EasySelection"
+                />
+              </a>
+            </table>
+          </td>
+        </tr>
+        <!-- LOGO SECTION -->
+        <tr>
+          <td>
+            <table>
+              <p style="padding: 0 10px; margin: 10px 0">
+                Cześć {{name}}, dziękujemy za rejestrację w EasySelection.
+              </p>
+            </table>
+          </td>
+        </tr>
+        <!-- MESSAGE -->
+        <tr>
+          <td>
+            <table>
+              <p style="padding: 0 10px; margin: 10px 0">
+                Hasło oraz adres email podane przy rejestracji konta będą
+                potrzebne do każdorazowego logowania w serwisie. Zapamiętaj je.
+              </p>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <table>
+              <p style="padding: 0 10px; margin: 10px 0">
+                Aby kontynuować rejestrację, potwierdź swoje konto:
+              </p>
+            </table>
+          </td>
+        </tr>
+        <!-- VERIFY BUTTON -->
+        <tr>
+          <td>
+            <table>
+              <div style="margin: 0 10px">
+                <a class="verify-button" href="{{verifyLink}}">potwierdzam</a>
+              </div>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
