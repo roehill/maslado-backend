@@ -7,7 +7,7 @@ const { google } = require("googleapis");
 
 // nodemailer
 let transporter = nodemailer.createTransport({
-  host: "roehill.atthost24.pl",
+  host: "smtp.hostinger.com",
   port: 465,
   secure: true, // upgrade later with STARTTLS
   auth: {
@@ -45,7 +45,7 @@ exports.sendQuestion = async (req, res) => {
     });
 
     const mailOptions = {
-      from: "EasySelection <kontakt@easyselection.pl>",
+      from: "Maslado <kontakt@maslado.com>",
       to: "roehilldev@gmail.com",
       subject: question.title,
       html: `Pytanie od: ${question.email} <br><br> ${question.question}`,

@@ -56,7 +56,6 @@ const upload = multer({ storage });
 // app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array("photo"));
 
 // ROUTES
-
 const galleriesRoutes = require("./routes/galleries");
 app.use("/api/galleries", galleriesRoutes);
 

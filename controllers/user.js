@@ -11,7 +11,7 @@ const { validateEmail } = require("../middlewares/validations");
 
 // nodemailer
 let transporter = nodemailer.createTransport({
-  host: "roehill.atthost24.pl",
+  host: "smtp.hostinger.com",
   port: 465,
   secure: true, // upgrade later with STARTTLS
   auth: {
@@ -31,13 +31,12 @@ transporter.use(
 );
 
 const sendVerificationEmail = ({ _id, email, name }, res) => {
-  const currentURL = "https://www.api.easyselection.pl/api/";
-  // const currentURL = "http://localhost:5000/api/";
+  const currentURL = "https://www.maslado-api.online/api/";
   const uniqueString = uuidv4() + _id;
 
   const mailOptions = {
     // from: process.env.AUTH_EMAIL,
-    from: "EasySelection <kontakt@easyselection.pl>",
+    from: "Maslado <kontakt@maslado.com>",
     to: email,
     subject: "Weryfikacja konta",
     template: "registration",
@@ -275,7 +274,7 @@ exports.getUser = async (req, res) => {
 
 const sendResetPasswordEmail = (email, name, code) => {
   const mailOptions = {
-    from: "EasySelection <kontakt@easyselection.pl>",
+    from: "Maslado <kontakt@maslado.com>",
     to: email,
     subject: "Odzyskiwanie hasła",
     template: "resetPassword",

@@ -1,10 +1,6 @@
 const fs = require("fs");
-const pathh = require("path");
-const multer = require("multer");
 const { Readable } = require("stream");
 const sharp = require("sharp");
-const { adsensehost } = require("googleapis/build/src/apis/adsensehost");
-const { json } = require("body-parser");
 const cloudinary = require("cloudinary").v2;
 
 cloudinary.config({
@@ -56,18 +52,26 @@ const uploadFromBuffer = (file, path) => {
 
 exports.uploadPhotos = async (req, res) => {
   try {
-    const { path } = req.body;
-    let photos = req.files;
+    const { path, photos } = req.body;
+    let newPhotos = req.files;
     let images = [];
+    console.log(newPhotos);
 
-    for (const photo of photos) {
-      const file = await sharp(photo.buffer).jpeg({ quality: 20 }).toBuffer();
+    if (photos.length < 500) {
+      for (const photo of newPhotos) {
+        const file = await sharp(photo.buffer).jpeg({ quality: 20 }).toBuffer();
 
-      let url = await uploadFromBuffer(file, path);
-      images.push(url);
+        let url = await uploadFromBuffer(file, path);
+        images.push(url);
+      }
+
+      res.json(images);
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: "Przekroczono limit zdjęć w galerii",
+      });
     }
-
-    res.json(images);
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -120,7 +124,9 @@ exports.resizePhotos = async (req, res) => {
     let photos = Object.values(req.files).flat();
 
     if (photos.length > 500) {
-      return res.status(400).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
+      return res
+        .status(400)
+        .json({ message: "Przekroczono dopuszczalny limit zdjęć" });
     }
 
     // Checking if there is no organization folder create one
@@ -146,7 +152,7 @@ exports.resizePhotos = async (req, res) => {
   }
 };
 
-exports.uploadPhotoss = async (req, res) => {
+exports.uploadAvatar = async (req, res) => {
   try {
     const { path } = req.body;
 
@@ -155,7 +161,9 @@ exports.uploadPhotoss = async (req, res) => {
     let images = [];
 
     if (photos.length > 500) {
-      return res.status(400).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
+      return res
+        .status(400)
+        .json({ message: "Przekroczono dopuszczalny limit zdjęć" });
     }
 
     for (const photo of photos) {
@@ -229,15 +237,19 @@ const removeTmp = (path) => {
 
 exports.deleteMultiplePhotos = async (req, res) => {
   try {
-    const { deletedPhotos } = req.body;
+    const { deletedPhotos, galleryStatus } = req.body;
 
-    for (const photo of deletedPhotos) {
-      await cloudinary.uploader.destroy(`${photo}`, function (result) {
-        console.log(photo, result);
-      });
+    if (galleryStatus === "new") {
+      for (const photo of deletedPhotos) {
+        await cloudinary.uploader.destroy(`${photo}`, function (result) {
+          console.log(photo, result);
+        });
+      }
+
+      return res
+        .status(201)
+        .json({ deletedPhotos, message: "Poprawnie usunięto zdjęcia" });
     }
-
-    return res.status(201).json({ deletedPhotos, message: "Poprawnie usunięto zdjęcie" });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

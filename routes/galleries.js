@@ -10,6 +10,7 @@ const {
   getCustomerGalleries,
   sendGalleryToCustomer,
   sendGalleryToPhotographer,
+  sendEditedGalleryToCustomer,
   writeResume,
   readResume,
 } = require("../controllers/gallery");
@@ -38,6 +39,9 @@ router.delete("/:id", verifyToken, deleteGallery);
 
 // SEND GALLERY TO CUSTOMER
 router.post("/send", verifyToken, sendGalleryToCustomer);
+
+// SEND EDITED GALLERY TO CUSTOMER
+router.post("/send-edited", verifyToken, sendEditedGalleryToCustomer);
 
 // SEND GALLERY TO CUSTOMER
 router.post("/send-to-photographer", verifyToken, sendGalleryToPhotographer);

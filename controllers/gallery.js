@@ -176,7 +176,7 @@ exports.getCustomerGalleries = async (req, res) => {
 
 // nodemailer
 let transporter = nodemailer.createTransport({
-  host: "roehill.atthost24.pl",
+  host: "smtp.hostinger.com",
   port: 465,
   secure: true, // upgrade later with STARTTLS
   auth: {
@@ -202,7 +202,7 @@ exports.sendGalleryToCustomer = async (req, res) => {
     let password = req.body.passwordUnsecure;
 
     const mailOptions = {
-      from: "EasySelection <kontakt@easyselection.pl>",
+      from: "Maslado <kontakt@maslado.com>",
       to: email,
       subject: `${organization_name} udostępnił/a galerię ze zdjęciami do wyboru`,
       template: "send-to-client",
@@ -238,13 +238,49 @@ exports.sendGalleryToPhotographer = async (req, res) => {
     let customerName = req.body.customerName;
 
     const mailOptions = {
-      from: "EasySelection <kontakt@easyselection.pl>",
+      from: "Maslado <kontakt@maslado.com>",
       to: email,
       subject: `Klient dokonał wyboru w galerii ${galleryTitle}`,
       template: "send-to-photographer",
       context: {
         galleryTitle: galleryTitle,
         customerName: customerName,
+      },
+      attachments: [
+        {
+          filename: "logo.png",
+          path: path.resolve("./views/logo.png"),
+          cid: "imagename",
+        },
+      ],
+    };
+
+    transporter.sendMail(mailOptions);
+
+    res.json("Wyslano galerie");
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+exports.sendEditedGalleryToCustomer = async (req, res) => {
+  try {
+    let organization_name = req.decoded.organization_name;
+    let email = req.body.login;
+    let password = req.body.passwordUnsecure;
+
+    const mailOptions = {
+      from: "Maslado <kontakt@maslado.com>",
+      to: email,
+      subject: `${organization_name} udostępnił/a galerię ze zdjęciami do pobrania`,
+      template: "send-edited-to-client",
+      context: {
+        organization_name: organization_name,
+        email: email,
+        password: password,
       },
       attachments: [
         {
