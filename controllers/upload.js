@@ -3,6 +3,8 @@ const { Readable } = require("stream");
 const sharp = require("sharp");
 const cloudinary = require("cloudinary").v2;
 
+const im = require("imagemagick");
+
 cloudinary.config({
   cloud_name: process.env.CLOUD_NAME,
   api_key: process.env.CLOUD_API_KEY,
@@ -53,13 +55,13 @@ const uploadFromBuffer = (file, path) => {
 exports.uploadPhotos = async (req, res) => {
   try {
     const { path, photos } = req.body;
+
     let newPhotos = req.files;
     let images = [];
-    console.log(newPhotos);
 
     if (photos.length < 500) {
       for (const photo of newPhotos) {
-        const file = await sharp(photo.buffer).jpeg({ quality: 20 }).toBuffer();
+        const file = await sharp(photo.buffer).jpeg({ quality: 20 }).rotate().toBuffer();
 
         let url = await uploadFromBuffer(file, path);
         images.push(url);
@@ -105,7 +107,7 @@ exports.uploadEditedPhotos = async (req, res) => {
     let images = [];
 
     for (const photo of photos) {
-      const file = await sharp(photo.buffer).jpeg({ quality: 60 }).toBuffer();
+      const file = await sharp(photo.buffer).jpeg({ quality: 60 }).rotate().toBuffer();
 
       let url = await uploadFromBufferEditedPhotos(file, path);
       images.push(url);
@@ -124,9 +126,7 @@ exports.resizePhotos = async (req, res) => {
     let photos = Object.values(req.files).flat();
 
     if (photos.length > 500) {
-      return res
-        .status(400)
-        .json({ message: "Przekroczono dopuszczalny limit zdjęć" });
+      return res.status(400).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
     }
 
     // Checking if there is no organization folder create one
@@ -161,9 +161,7 @@ exports.uploadAvatar = async (req, res) => {
     let images = [];
 
     if (photos.length > 500) {
-      return res
-        .status(400)
-        .json({ message: "Przekroczono dopuszczalny limit zdjęć" });
+      return res.status(400).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
     }
 
     for (const photo of photos) {
@@ -246,9 +244,7 @@ exports.deleteMultiplePhotos = async (req, res) => {
         });
       }
 
-      return res
-        .status(201)
-        .json({ deletedPhotos, message: "Poprawnie usunięto zdjęcia" });
+      return res.status(201).json({ deletedPhotos, message: "Poprawnie usunięto zdjęcia" });
     }
   } catch (error) {
     return res.status(500).json({ message: error.message });

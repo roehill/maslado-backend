@@ -105,7 +105,7 @@ exports.loginCustomer = async (req, res) => {
     let customer = await Customer.findOne({ email: email });
 
     if (!customer) {
-      res.status(403).json({
+      return res.status(403).json({
         success: false,
         message: "Nie znaleziono takiego użytkownika.",
       });
@@ -125,7 +125,7 @@ exports.loginCustomer = async (req, res) => {
 
     res.json({ success: true, token: token, user: customer });
   } catch (error) {
-    res.json({
+    return res.json({
       success: false,
       message: error.message,
     });
