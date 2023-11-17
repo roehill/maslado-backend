@@ -31,3 +31,13 @@ exports.createSelection = async (req, res) => {
     });
   }
 };
+
+// FETCH SELECTIONS BY GALLERY ID
+exports.fetchSelections = async (req, res) => {
+  try {
+    const selections = await Selection.find({ gallery: req.params.id });
+    res.json(selections);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};

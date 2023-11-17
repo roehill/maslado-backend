@@ -28,7 +28,7 @@ const uploadFromBuffer = (file, path) => {
         folder: path,
         transformation: [
           {
-            overlay: `Watermark:watermark_zn20pn`,
+            overlay: `Watermark:watermark_zeopzj`,
           },
           { flags: "relative", width: "0.99", height: "0.99", crop: "scale" },
           { flags: ["layer_apply", "no_overflow"] },
@@ -54,10 +54,15 @@ const uploadFromBuffer = (file, path) => {
 
 exports.uploadPhotos = async (req, res) => {
   try {
-    const { path, photos } = req.body;
+    const { path } = req.body;
+    let photos = req.body.photos;
 
     let newPhotos = req.files;
     let images = [];
+
+    if (photos === undefined) {
+      photos = [];
+    }
 
     if (photos.length < 500) {
       for (const photo of newPhotos) {
@@ -217,6 +222,7 @@ exports.downloadPhotos = async (req, res) => {
     cloudinary.uploader.create_zip(
       {
         public_ids: req.body.public_ids,
+        target_public_id: req.body.title,
       },
       (err, response) => {
         res.status(200).json(response);
