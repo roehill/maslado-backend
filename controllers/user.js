@@ -31,7 +31,7 @@ transporter.use(
 );
 
 const sendVerificationEmail = ({ _id, email, name }, res) => {
-  const currentURL = "https://www.maslado-api.online/api/";
+  const currentURL = "https://www.maslado-api.com/api/";
   const uniqueString = uuidv4() + _id;
 
   const mailOptions = {

@@ -11,13 +11,18 @@ exports.writeResume = async (req, res) => {
   try {
     let title = req.body.title;
     let customer = req.body.customer;
-    let selectedPhotos = req.body.selectedPhotos;
+    let selections = req.body.selections;
 
-    list = selectedPhotos
-      .map((photo) => `<li>${photo.title}</li><span>${photo.printingsPrice ? "WYDRUKI" : "BRAK WYDRUKÓW"}</span>`)
+    let selectionsList = selections
+      .map(
+        (selection, index) =>
+          `<h2>SELEKCJA ${index + 1}</h2>${selection.photos
+            .map((photo) => `<li>${photo.title}</li><span>${photo.printingsPrice ? "WYDRUKI" : "BRAK WYDRUKÓW"}</span>`)
+            .join("")}`
+      )
       .join("");
 
-    let resume = `<div><p>Podsumowanie galerii "${title}"</p><br><p>Klient: ${customer}</p><div><ol>${list}</ol></div></div>`;
+    let resume = `<div><p>Podsumowanie galerii "${title}"</p><br><p>Klient: ${customer}</p><div><ol>${selectionsList}</ol></div></div>`;
 
     const options = {
       wordwrap: 130,
@@ -137,7 +142,26 @@ exports.updateGallery = async (req, res) => {
           additionalPrintings: req.body.additionalPrintings,
           additionalPrintingsPrice: req.body.additionalPrintingsPrice,
           status: req.body.status,
+          firstViewDate: req.body.firstViewDate,
           photos: req.body.photos,
+        },
+      },
+      { upsert: true }
+    );
+
+    res.json(gallery);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.updateGalleryViewDate = async (req, res) => {
+  try {
+    const gallery = await Gallery.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          viewDate: req.body.viewDate,
         },
       },
       { upsert: true }

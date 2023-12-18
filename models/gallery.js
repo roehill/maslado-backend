@@ -41,6 +41,7 @@ const GallerySchema = new Schema({
     },
   ],
   status: { type: String, required: true },
+  viewDate: { type: String, required: false },
 });
 
 module.exports = mongoose.model("gallery", GallerySchema);

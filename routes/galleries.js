@@ -7,6 +7,7 @@ const {
   getGallery,
   deleteGallery,
   updateGallery,
+  updateGalleryViewDate,
   getCustomerGalleries,
   sendGalleryToCustomer,
   sendGalleryToPhotographer,
@@ -33,6 +34,7 @@ router.get("/:id", verifyToken, getGallery);
 
 // UPDATE GALLERY
 router.put("/:id", verifyToken, updateGallery);
+router.put("/viewDate/:id", verifyToken, updateGalleryViewDate);
 
 // DELETE GALLERY
 router.delete("/:id", verifyToken, deleteGallery);

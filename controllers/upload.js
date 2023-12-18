@@ -56,16 +56,16 @@ exports.uploadPhotos = async (req, res) => {
   try {
     const { path } = req.body;
     let photos = req.body.photos;
-
-    let newPhotos = req.files;
-    let images = [];
-
     if (photos === undefined) {
       photos = [];
     }
 
+    let newPhotos = req.files;
+    let images = [];
+
     if (photos.length < 500) {
       for (const photo of newPhotos) {
+        console.log(newPhotos);
         const file = await sharp(photo.buffer).jpeg({ quality: 20 }).rotate().toBuffer();
 
         let url = await uploadFromBuffer(file, path);
@@ -219,6 +219,7 @@ const uploadToCloudinary = async (file, path) => {
 
 exports.downloadPhotos = async (req, res) => {
   try {
+    console.log(req.body.public_ids, req.body.title);
     cloudinary.uploader.create_zip(
       {
         public_ids: req.body.public_ids,
