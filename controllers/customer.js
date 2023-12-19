@@ -41,6 +41,7 @@ exports.editCustomer = async (req, res) => {
         $set: {
           name: req.body.name,
           phone: req.body.phone,
+          notes: req.body.notes,
         },
       },
       { upsert: true }
@@ -77,6 +78,7 @@ exports.signupCustomer = async (req, res) => {
       newCustomer.password = req.body.password;
       newCustomer.passwordUnsecure = req.body.password;
       newCustomer.gallery = req.body.gallery;
+      newCustomer.notes = req.body.notes;
       newCustomer.role = "customer";
 
       await newCustomer.save();

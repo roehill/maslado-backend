@@ -13,6 +13,7 @@ const CustomerSchema = new Schema({
   passwordUnsecure: { type: String, required: true },
   role: { type: String, required: true },
   gallery: { type: Array },
+  notes: { type: String },
 });
 
 CustomerSchema.pre("save", function (next) {
