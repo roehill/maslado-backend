@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const cors = require("cors");
 const multer = require("multer");
+const fileUpload = require("express-fileupload");
 
 dotenv.config();
 
@@ -24,6 +25,8 @@ app.use(
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(fileUpload());
+
 // DATABASE
 mongoose.connect(process.env.DATABASE, (error) => {
   if (error) {
@@ -33,29 +36,22 @@ mongoose.connect(process.env.DATABASE, (error) => {
   }
 });
 
-// UPLOADING IMAGES
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
-// const fileStorage = multer.diskStorage({
-//   destination: (req, file, cb) => {
-//     cb(null, "images");
-//   },
-//   filename: (req, file, cb) => {
-//     cb(null, file.originalname);
-//   },
-// });
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "temp");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
 
-// const fileFilter = (req, file, cb) => {
-//   if (file.mimetype === "image/png" || file.mimetype === "image/jpg" || file.mimetype === "image/jpeg") {
-//     cb(null, true);
-//   } else {
-//     cb(null, false);
-//   }
-// };
-// const upload = multer({ storage: fileStorage, fileFilter: fileFilter }).array("photo");
-// app.use(multer({ storage: fileStorage, fileFilter: fileFilter }).array("photo"));
+const upload = multer({ storage: storage });
 
 // ROUTES
+app.get("/", (req, res) => {
+  res.send("Maslado REST API 0.10");
+});
+
 const galleriesRoutes = require("./routes/galleries");
 app.use("/api/galleries", galleriesRoutes);
 
@@ -63,7 +59,7 @@ const selectionsRoutes = require("./routes/selections");
 app.use("/api/selections", selectionsRoutes);
 
 const uploadRoutes = require("./routes/upload");
-app.use("/api/upload", upload.array("photo"), uploadRoutes);
+app.use("/api/upload", uploadRoutes);
 
 const usersRoutes = require("./routes/user");
 app.use("/api/users", usersRoutes);
@@ -77,9 +73,4 @@ app.use("/api/contacts", contactsRoutes);
 const bundlesRoutes = require("./routes/bundles");
 app.use("/api/bundles", bundlesRoutes);
 
-app.use("/uploads/images", express.static(path.join("uploads", "images")));
-
-// 4TyDPSmGN5mawPCN
-
-//Access Key ID: AKIAUPAVTCMUWNSJ5DZH
-// Secret Access Key: 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
+app.use("/uploads/images", express.static(path.join("images")));

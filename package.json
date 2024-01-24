@@ -18,7 +18,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.0.1",
     "express": "^4.18.1",
-    "express-fileupload": "^1.4.0",
+    "express-fileupload": "^1.4.3",
     "gm": "^1.25.0",
     "googleapis": "^102.0.0",
     "html-to-text": "^9.0.4",
@@ -31,7 +31,7 @@
     "multer-s3": "^2.10.0",
     "nodemailer": "^6.7.5",
     "nodemailer-express-handlebars": "^6.0.0",
-    "sharp": "^0.32.4",
+    "sharp": "^0.32.6",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
