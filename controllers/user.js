@@ -101,11 +101,7 @@ exports.registerUser = async (req, res) => {
       newUser.password = req.body.password;
       newUser.verified = false;
       newUser.available_sessions = 3;
-      newUser.watermark = {
-        id: "",
-        url: "",
-      };
-      newUser.preview = {
+      newUser.avatar = {
         id: "",
         url: "",
       };
@@ -405,8 +401,10 @@ exports.editUser = async (req, res) => {
       {
         $set: {
           available_sessions: req.body.available_sessions,
-          watermark: req.body.watermark,
-          preview: req.body.preview,
+          avatar: {
+            id: req.body.avatarID,
+            url: req.body.avatarURL,
+          },
         },
       },
       { upsert: true }

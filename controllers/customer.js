@@ -81,6 +81,13 @@ exports.signupCustomer = async (req, res) => {
       newCustomer.notes = req.body.notes;
       newCustomer.role = "customer";
 
+      const checkEmail = await Customer.findOne({ email: req.body.email });
+      if (checkEmail) {
+        return res.status(400).json({
+          message: "Istnieje juz konto zarejestrowane na podany adres email",
+        });
+      }
+
       await newCustomer.save();
       let token = jwt.sign(newCustomer.toJSON(), process.env.SECRET, {
         expiresIn: 604800, // 1 week

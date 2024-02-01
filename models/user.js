@@ -10,13 +10,9 @@ const UserSchema = new Schema(
     password: { type: String, required: true },
     role: { type: String, required: true },
     verified: { type: Boolean, required: true },
-    watermark: {
-      id: { type: String, required: false },
-      url: { type: String, required: false },
-    },
-    preview: {
-      id: { type: String, required: false },
-      url: { type: String, required: false },
+    avatar: {
+      id: { type: String },
+      url: { type: String },
     },
     available_sessions: { type: Number, required: true },
   },

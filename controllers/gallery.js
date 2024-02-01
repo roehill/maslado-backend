@@ -16,7 +16,7 @@ exports.writeResume = async (req, res) => {
     let selectionsList = selections
       .map(
         (selection, index) =>
-          `<h2>SELEKCJA ${index + 1}</h2>${selection.photos
+          `<h2>Wybór ${index + 1}</h2>${selection.photos
             .map((photo) => `<li>${photo.title}</li><span>${photo.printingsPrice ? "WYDRUKI" : "BRAK WYDRUKÓW"}</span>`)
             .join("")}`
       )

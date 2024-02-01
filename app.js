@@ -22,7 +22,7 @@ app.use(
 );
 
 // MIDDLEWARES
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(fileUpload());
@@ -74,3 +74,4 @@ const bundlesRoutes = require("./routes/bundles");
 app.use("/api/bundles", bundlesRoutes);
 
 app.use("/uploads/images", express.static(path.join("images")));
+app.use("/uploads/archives", express.static(path.join("archives")));
