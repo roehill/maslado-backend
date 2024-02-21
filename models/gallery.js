@@ -12,6 +12,7 @@ const GallerySchema = new Schema({
   paid: { type: Number, required: true },
   shotsQt: { type: Number, required: true },
   selectedShotsQt: { type: Number, required: true },
+  markedShotsQt: { type: Number, required: true },
   additionalShotPrice: { type: Number, required: true },
   ifPrintings: { type: Boolean, required: true },
   additionalPrintings: [

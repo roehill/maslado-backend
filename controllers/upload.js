@@ -10,6 +10,15 @@ exports.uploadPhotos = async (req, res) => {
     const path = req.body.path;
     const { photo } = req.files;
 
+    //
+    if (!req.files || Object.values(req.files).flat().length === 0) {
+      return res.status(400).json({ message: "Nie wybrano żadnych zdjęć" });
+    }
+
+    if (photo.mimetype !== "image/jpeg" && photo.mimetype !== "image/png") {
+      return res.status(400).json({ message: "Nieobsługiwany format zdjęć" });
+    }
+
     // Tworzę jego unikalne ID
     const photoID = uuid.v4();
 
@@ -46,8 +55,7 @@ exports.uploadPhotos = async (req, res) => {
     return res.status(201).json({
       success: true,
       id: photoID,
-      url: `https://www.maslado-api.com/uploads/images/${path}/${photoID}.jpg`,
-      // url: `http://localhost:5000/uploads/images/${path}/${photoID}.jpg`,
+      url: `${process.env.BASE_URL}/uploads/images/${path}/${photoID}.jpg`,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -73,8 +81,7 @@ exports.uploadEditedPhotos = async (req, res) => {
     return res.status(201).json({
       success: true,
       id: photoID,
-      url: `https://www.maslado-api.com/uploads/images/${path}/${photoID}.jpg`,
-      // url: `http://localhost:5000/uploads/images/${path}/${photoID}.jpg`,
+      url: `${process.env.BASE_URL}/uploads/images/${path}/${photoID}.jpg`,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
@@ -95,7 +102,13 @@ exports.uploadAvatar = async (req, res) => {
   // Przenoszę plik do folderu
   photo.mv(uploadPath, function (err) {});
 
-  // Usuwam plik temp z serwera
+  // Sprawdzam czy istnieje folder, jeśli nie to go tworzę
+  const dir = `./images/${path}`;
+  if (!fs.existsSync(dir)) {
+    fs.mkdirSync(dir, { recursive: true });
+  }
+
+  // Usuwam plik ze starym avatarem z serwera
   if (avatarID) {
     fs.unlinkSync(`./images/${path}/${avatarID}.jpg`);
   }
@@ -104,8 +117,7 @@ exports.uploadAvatar = async (req, res) => {
   return res.status(201).json({
     success: true,
     id: photoID,
-    url: `https://www.maslado-api.com/uploads/images/${path}/${photoID}.jpg`,
-    // url: `http://localhost:5000/uploads/images/${path}/${photoID}.jpg`,
+    url: `${process.env.BASE_URL}/uploads/images/${path}/${photoID}.jpg`,
   });
 };
 
@@ -141,8 +153,7 @@ exports.downloadPhotos = async (req, res) => {
       });
 
     return res.status(200).json({
-      url: `https://www.maslado-api.com/uploads/images/${path}/${photoID}.jpg`,
-      // url: `http://localhost:5000/uploads/archives/${path}/${id}.zip`,
+      url: `${process.env.BASE_URL}/uploads/archives/${path}/${id}.zip`,
     });
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });

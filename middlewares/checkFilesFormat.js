@@ -2,6 +2,7 @@ const fs = require("fs");
 
 module.exports = async function (req, res, next) {
   try {
+    console.log("cx");
     if (!req.files || Object.values(req.files).flat().length === 0) {
       return res.status(400).json({ message: "Nie wybrano żadnych zdjęć" });
     }

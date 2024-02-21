@@ -62,6 +62,7 @@ exports.createGallery = async (req, res) => {
     newGallery.paid = req.body.paid;
     newGallery.shotsQt = req.body.shotsQt;
     newGallery.selectedShotsQt = 0;
+    newGallery.markedShotsQt = 0;
     newGallery.additionalShotPrice = req.body.additionalShotPrice;
     newGallery.ifPrintings = req.body.ifPrintings;
     newGallery.additionalPrintings = req.body.additionalPrintings;
@@ -136,6 +137,7 @@ exports.updateGallery = async (req, res) => {
           paid: req.body.paid,
           shotsQt: req.body.shotsQt,
           selectedShotsQt: req.body.selectedShotsQt,
+          markedShotsQt: req.body.markedShotsQt,
           printingsQt: req.body.printingsQt,
           additionalShotPrice: req.body.additionalShotPrice,
           ifPrintings: req.body.ifPrintings,
