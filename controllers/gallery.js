@@ -175,6 +175,24 @@ exports.updateGalleryViewDate = async (req, res) => {
   }
 };
 
+exports.updateGalleryPayment = async (req, res) => {
+  try {
+    const gallery = await Gallery.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
+          paid: req.body.paid,
+        },
+      },
+      { upsert: true }
+    );
+
+    res.json(gallery);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
 exports.deleteGallery = async (req, res) => {
   try {
     const gallery = await Gallery.findOneAndDelete({ _id: req.params.id });

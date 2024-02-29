@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
 
-const BundleSchema = new Schema(
+const OrderSchema = new Schema(
   {
     user: { type: Schema.Types.ObjectId, ref: "user", required: true },
     type: { type: String, required: true },
@@ -11,4 +11,4 @@ const BundleSchema = new Schema(
   { timestamps: true }
 );
 
-module.exports = mongoose.model("bundle", BundleSchema);
+module.exports = mongoose.model("bundle", OrderSchema);

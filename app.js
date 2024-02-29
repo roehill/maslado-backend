@@ -70,8 +70,8 @@ app.use("/api/customers", customersRoutes);
 const contactsRoutes = require("./routes/contacts");
 app.use("/api/contacts", contactsRoutes);
 
-const bundlesRoutes = require("./routes/bundles");
-app.use("/api/bundles", bundlesRoutes);
+const ordersRoutes = require("./routes/orders");
+app.use("/api/orders", ordersRoutes);
 
 app.use("/uploads/images", express.static(path.join("images")));
 app.use("/uploads/archives", express.static(path.join("archives")));
