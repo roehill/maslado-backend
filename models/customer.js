@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt-nodejs");
 
 const CustomerSchema = new Schema({
   organization: { type: Schema.Types.ObjectId, ref: "users" },
-  organization_name: { type: String, required: true },
+  // organization_name: { type: String, required: true },
   name: { type: String, required: true },
   phone: { type: String, required: false },
   email: { type: String, unique: true, required: true },

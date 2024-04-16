@@ -70,7 +70,7 @@ exports.signupCustomer = async (req, res) => {
       let newCustomer = new Customer();
 
       newCustomer.organization = req.decoded._id;
-      newCustomer.organization_name = req.body.organization_name;
+      // newCustomer.organization_name = req.body.organization_name;
       newCustomer.name = req.body.name;
       newCustomer.phone = req.body.phone;
       newCustomer.email = req.body.email;
