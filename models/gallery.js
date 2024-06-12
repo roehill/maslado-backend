@@ -41,6 +41,15 @@ const GallerySchema = new Schema({
       ],
     },
   ],
+  editedPhotos: [
+    {
+      id: { type: String, required: true },
+      url: { type: String, required: true },
+      title: { type: String, required: true },
+      edited: { type: Boolean, required: true },
+      required: false,
+    },
+  ],
   status: { type: String, required: true },
   viewDate: { type: String, required: false },
 });

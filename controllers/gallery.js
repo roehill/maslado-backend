@@ -119,9 +119,9 @@ exports.getGallery = async (req, res) => {
 };
 
 exports.updateGallery = async (req, res) => {
-  if (req.body.photos.length > 500) {
-    return res.status(500).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
-  }
+  // if (req.body.photos.length > 500) {
+  //   return res.status(500).json({ message: "Przekroczono dopuszczalny limit zdjęć" });
+  // }
 
   try {
     const gallery = await Gallery.findOneAndUpdate(
@@ -146,6 +146,7 @@ exports.updateGallery = async (req, res) => {
           status: req.body.status,
           firstViewDate: req.body.firstViewDate,
           photos: req.body.photos,
+          editedPhotos: req.body.editedPhotos,
         },
       },
       { upsert: true }

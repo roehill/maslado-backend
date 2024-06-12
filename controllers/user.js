@@ -31,7 +31,7 @@ transporter.use(
 );
 
 const sendVerificationEmail = ({ _id, email, name }, res) => {
-  const currentURL = "https://www.maslado-api.com/api/";
+  const currentURL = "https://www.maslado-api.online/api/";
   const uniqueString = uuidv4() + _id;
 
   const mailOptions = {
@@ -94,18 +94,37 @@ exports.registerUser = async (req, res) => {
   } else {
     try {
       let newUser = new User();
-
+      // Required
       newUser.organization_name = req.body.organization;
       newUser.name = req.body.name;
       newUser.email = req.body.email;
       newUser.password = req.body.password;
+
+      // Optional
+      newUser.surname = "";
+      newUser.webpage = "";
+      newUser.facebook = "";
+      newUser.instagram = "";
+      newUser.phone = "";
+      newUser.address = "";
+      newUser.city = "";
+      newUser.zipcode = "";
+      newUser.taxNumber = "";
+
+      // Required but set by default
+      newUser.defaultLanguage = "PL";
+      newUser.defaultCurrency = "PLN";
+      newUser.role = "admin";
       newUser.verified = false;
       newUser.available_sessions = 3;
       newUser.avatar = {
         id: "",
         url: "",
       };
-      newUser.role = req.body.role;
+      newUser.logo = {
+        id: "",
+        url: "",
+      };
 
       if (!validateEmail(newUser.email)) {
         return res.status(400).json({
