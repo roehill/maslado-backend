@@ -22,7 +22,7 @@ exports.getUserCustomers = async (req, res) => {
 exports.getSingleCustomer = async (req, res) => {
   try {
     let customer = await Customer.findOne({ _id: req.params.id });
-
+    console.log(customer);
     res.json(customer);
   } catch (error) {
     res.status(500).json({
