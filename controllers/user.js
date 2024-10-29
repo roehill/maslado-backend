@@ -8,6 +8,7 @@ const { v4: uuidv4 } = require("uuid");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
 const { validateEmail } = require("../middlewares/validations");
+const { log } = require("console");
 
 // nodemailer
 let transporter = nodemailer.createTransport({
@@ -31,7 +32,7 @@ transporter.use(
 );
 
 const sendVerificationEmail = ({ _id, email, name }, res) => {
-  const currentURL = "https://www.maslado-api.online/api/";
+  const currentURL = "https://www.maslado-api.com/api/";
   const uniqueString = uuidv4() + _id;
 
   const mailOptions = {
@@ -114,6 +115,7 @@ exports.registerUser = async (req, res) => {
       // Required but set by default
       newUser.defaultLanguage = "PL";
       newUser.defaultCurrency = "PLN";
+      newUser.payments = false;
       newUser.role = "admin";
       newUser.verified = false;
       newUser.available_sessions = 3;
@@ -332,6 +334,22 @@ exports.findUser = async (req, res) => {
   }
 };
 
+// FIND USER by galleries user (photographer)
+exports.findUserByUserID = async (req, res) => {
+  try {
+    const user = await User.findOne({ _id: req.params.userID }).select("-password");
+
+    return res.status(200).json({
+      payments: user.payments,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
 const generateCode = (length) => {
   let code = "";
   let schema = "0123456789";
@@ -415,6 +433,25 @@ exports.changePassword = async (req, res) => {
 // EDIT USER
 exports.editUser = async (req, res) => {
   try {
+    console.log(req.body);
+    const {
+      name,
+      surname,
+      phone,
+      webpage,
+      facebook,
+      instagram,
+      organization_name,
+      address,
+      city,
+      zipcode,
+      taxNumber,
+      p24ID,
+      CRCkey,
+      APIkey,
+      payments,
+    } = req.body;
+
     const user = await User.findOneAndUpdate(
       { _id: req.decoded._id },
       {
@@ -424,6 +461,21 @@ exports.editUser = async (req, res) => {
             id: req.body.avatarID,
             url: req.body.avatarURL,
           },
+          name: name,
+          surname: surname,
+          phone: phone,
+          webpage: webpage,
+          facebook: facebook,
+          instagram: instagram,
+          organization_name: organization_name,
+          address: address,
+          city: city,
+          zipcode: zipcode,
+          taxNumber: taxNumber,
+          p24ID: p24ID,
+          CRCkey: CRCkey,
+          APIkey: APIkey,
+          payments: payments,
         },
       },
       { upsert: true }

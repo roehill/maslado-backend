@@ -1,3 +1,4 @@
+const User = require("../models/user");
 const fs = require("fs");
 const uuid = require("uuid");
 const sharp = require("sharp");
@@ -125,8 +126,12 @@ exports.downloadPhotos = async (req, res) => {
   try {
     const id = req.body.id;
     const photos = req.body.photos;
-    const path = req.body.path;
+    const userID = req.body.userID;
     const images = [];
+
+    let user = await User.findOne({ _id: userID }).select("-password");
+
+    const path = user.organization_name;
 
     for (const photo of photos) {
       images.push(`images/${path}/${photo.id}.jpg`);

@@ -27,6 +27,10 @@ const UserSchema = new Schema(
       url: { type: String },
     },
     available_sessions: { type: Number, required: true },
+    p24ID: { type: Number, required: false },
+    CRCkey: { type: String, required: false },
+    APIkey: { type: String, required: false },
+    payments: { type: Boolean, required: true },
   },
   { timestamps: true }
 );

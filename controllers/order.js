@@ -18,8 +18,14 @@ const p24 = new P24({
   },
 });
 
-// SANDBOX_API_KEY=781e2dc74f2947578b1565fb489f4702
-// SANDBOX_CRC=a1c789f0a480100d
+exports.testAccess = async (req, res) => {
+  try {
+    await p24.testAccess();
+    return res.status(200).json(true);
+  } catch (error) {
+    return res.status(500).json(false);
+  }
+};
 
 exports.registerTransaction = async (req, res) => {
   try {
@@ -60,7 +66,7 @@ exports.registerTransaction = async (req, res) => {
       isVerified: false,
     });
 
-    await order.save();
+    // await order.save();
 
     const data = {
       sessionId: sessionId,
@@ -70,10 +76,12 @@ exports.registerTransaction = async (req, res) => {
       urlReturn: `https://app.maslado.com/orders/return?sessionId=${sessionId}`,
       // urlReturn: `https://maslado.com/orders/return?orderId=${sessionId}`,
 
-      urlStatus: `https://www.maslado-api.online/api/orders/verify-transaction`,
+      urlStatus: `https://www.maslado-api.com/api/orders/verify-transaction`,
       // urlStatus: `http://localhost:5000/api/orders/verify-transaction`,
       currency: "PLN",
     };
+
+    console.log(data);
 
     const transactionData = await p24.registerTransaction(data);
 
@@ -102,6 +110,8 @@ exports.verifyTransaction = async (req, res) => {
       amount: Number(amount),
       currency: currency,
     };
+
+    console.log(verifyData);
 
     const isTransactionVerified = await p24.verifyTransaction(verifyData);
 
@@ -149,6 +159,16 @@ exports.getOrder = async (req, res) => {
     const order = await Order.findOne({ sessionId: req.params.sessionId });
 
     res.json(order);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getOrders = async (req, res) => {
+  try {
+    const orders = await Order.find({ user: req.decoded._id });
+
+    res.json(orders);
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

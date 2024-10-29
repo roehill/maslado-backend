@@ -8,6 +8,7 @@ const {
   loginUser,
   getUser,
   findUser,
+  findUserByUserID,
   sendResetPasswordCode,
   validateResetCode,
   changePassword,
@@ -34,8 +35,11 @@ router.post("/login", loginUser);
 // GET PROFILE
 router.get("/", verifyToken, getUser);
 
-// FOUND USER
+// FIND USER
 router.get("/find-user", findUser);
+
+// FIND USER BY USER ID
+router.get("/find-user/:userID", findUserByUserID);
 
 // SEND RESET CODE
 router.post("/send-reset-code", sendResetPasswordCode);
