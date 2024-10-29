@@ -340,7 +340,7 @@ exports.findUserByUserID = async (req, res) => {
     const user = await User.findOne({ _id: req.params.userID }).select("-password");
 
     return res.status(200).json({
-      payments: user.payments,
+      user,
     });
   } catch (error) {
     res.status(500).json({

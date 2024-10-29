@@ -64,6 +64,9 @@ app.use("/api/upload", uploadRoutes);
 const usersRoutes = require("./routes/user");
 app.use("/api/users", usersRoutes);
 
+const userOptionsRoutes = require("./routes/userOptions");
+app.use("/api/user-options", userOptionsRoutes);
+
 const customersRoutes = require("./routes/customers");
 app.use("/api/customers", customersRoutes);
 
