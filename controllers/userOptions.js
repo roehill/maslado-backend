@@ -5,8 +5,10 @@ exports.updateUserOptions = async (req, res) => {
   try {
     const { paymentsMessage } = req.body;
     // Znajdź lub utwórz userOptions dla danego użytkownika
+    console.log(paymentsMessage);
+
     const userOptions = await UserOptions.findOneAndUpdate(
-      { user: req.decoded._id }, // Szukaj według ID użytkownika
+      { userId: req.decoded._id }, // Szukaj według ID użytkownika
       {
         $set: {
           paymentsMessage: paymentsMessage,

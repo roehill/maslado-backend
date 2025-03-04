@@ -1,6 +1,7 @@
 const Gallery = require("../models/gallery");
 const Customer = require("../models/customer");
 const User = require("../models/user");
+const mongoose = require("mongoose");
 const path = require("path");
 const fs = require("fs");
 const nodemailer = require("nodemailer");
@@ -49,61 +50,175 @@ exports.readResume = async (req, res) => {
 };
 
 exports.createGallery = async (req, res) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  const {
+    customer,
+    customerName,
+    title,
+    date,
+    type,
+    amount,
+    amountPaid,
+    shotsIncluded,
+    additionalShotPrice,
+    isPrintingsAvailable,
+    additionalPrintings,
+  } = req.body;
+
   try {
-    let newGallery = new Gallery();
-
-    newGallery.user = req.decoded._id;
-    newGallery.customer = req.body.customer;
-    newGallery.customerName = req.body.customerName;
-    newGallery.title = req.body.title;
-    newGallery.date = req.body.date;
-    newGallery.type = req.body.type;
-    newGallery.price = req.body.price;
-    newGallery.paid = req.body.paid;
-    newGallery.shotsQt = req.body.shotsQt;
-    newGallery.selectedShotsQt = 0;
-    newGallery.markedShotsQt = 0;
-    newGallery.additionalShotPrice = req.body.additionalShotPrice;
-    newGallery.ifPrintings = req.body.ifPrintings;
-    newGallery.additionalPrintings = req.body.additionalPrintings;
-    newGallery.photos = req.body.photos;
-    newGallery.status = "new";
-
-    // Dodaję klientowi ID tworzonej właśnie galerii
-    await Customer.findOneAndUpdate({ _id: req.body.customer }, { $push: { gallery: newGallery.id } });
-
     // Sprawdzam, czy user ma jeszcze sesje do wykorzystania
-    let availableSessions = 0;
-    await User.findOne({ _id: req.decoded._id }).then((data) => {
-      return (availableSessions = data.available_sessions);
+    const user = await User.findOneAndUpdate(
+      { _id: req.decoded._id, availableSessions: { $gt: 0 } },
+      { $inc: { availableSessions: -1 } },
+      { session }
+    );
+    if (!user) throw new Error("Brak dostępnych galerii, wykup pakiet.");
+
+    // Tworzę nową galerię
+    const newGallery = new Gallery({
+      userId: req.decoded._id,
+      customerId: customer,
+      customerName: customerName,
+      title,
+      date,
+      type,
+      amount,
+      amountPaid: amountPaid,
+      shotsIncluded: shotsIncluded,
+      shotsSelected: 0,
+      shotsMarked: 0,
+      additionalShotPrice: additionalShotPrice,
+      isPrintingAvailable: isPrintingsAvailable,
+      additionalPrintings: additionalPrintings,
     });
 
-    // Jeśli user nie ma juz sesji do wykorzystania nie moze utworzyć nowej galerii
-    if (availableSessions <= 0) {
-      return res.status(402).json({ message: "Brak dostępnych sesji. Wykup pakiet." });
-    } else {
-      // Jeśli ma dostępne sesje odejmuję jedną
-      await User.findOneAndUpdate(
-        { _id: req.decoded._id },
-        {
-          $set: {
-            available_sessions: availableSessions - 1,
-          },
-        }
-      );
-      // Zapisuję nową galerię
-      await newGallery.save();
-      res.json(newGallery);
-    }
+    // Odejmuję jedną galerię z dostępnej puli
+    await Customer.findByIdAndUpdate(customer, { $push: { galleries: newGallery._id } }, { session });
+    await newGallery.save({ session });
+    await session.commitTransaction();
+
+    res.json(newGallery);
+  } catch (error) {
+    await session.abortTransaction();
+    res.status(500).json({ message: error.message });
+  } finally {
+    session.endSession();
+  }
+
+  // try {
+  //   let newGallery = new Gallery();
+
+  //   newGallery.user = req.decoded._id;
+  //   newGallery.customer = req.body.customer;
+  //   newGallery.customerName = req.body.customerName;
+  //   newGallery.title = req.body.title;
+  //   newGallery.date = req.body.date;
+  //   newGallery.type = req.body.type;
+  //   newGallery.price = req.body.price;
+  //   newGallery.paid = req.body.paid;
+  //   newGallery.shotsQt = req.body.shotsQt;
+  //   newGallery.selectedShotsQt = 0;
+  //   newGallery.markedShotsQt = 0;
+  //   newGallery.additionalShotPrice = req.body.additionalShotPrice;
+  //   newGallery.ifPrintings = req.body.ifPrintings;
+  //   newGallery.additionalPrintings = req.body.additionalPrintings;
+  //   newGallery.photos = req.body.photos;
+  //   newGallery.status = "new";
+
+  //   // Dodaję klientowi ID tworzonej właśnie galerii
+  //   await Customer.findOneAndUpdate({ _id: req.body.customer }, { $push: { gallery: newGallery.id } });
+
+  //   // Sprawdzam, czy user ma jeszcze sesje do wykorzystania
+  //   let availableSessions = 0;
+  //   await User.findOne({ _id: req.decoded._id }).then((data) => {
+  //     return (availableSessions = data.available_sessions);
+  //   });
+
+  //   // Jeśli user nie ma juz sesji do wykorzystania nie moze utworzyć nowej galerii
+  //   if (availableSessions <= 0) {
+  //     return res.status(402).json({ message: "Brak dostępnych sesji. Wykup pakiet." });
+  //   } else {
+  //     // Jeśli ma dostępne sesje odejmuję jedną
+  //     await User.findOneAndUpdate(
+  //       { _id: req.decoded._id },
+  //       {
+  //         $set: {
+  //           available_sessions: availableSessions - 1,
+  //         },
+  //       }
+  //     );
+  //     // Zapisuję nową galerię
+  //     await newGallery.save();
+  //     res.json(newGallery);
+  //   }
+  // } catch (error) {
+  //   return res.status(500).json({ message: error.message });
+  // }
+};
+
+exports.getGalleries = async (req, res) => {
+  try {
+    // Pobierz page i limit z zapytania, ustaw domyślne wartości
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
+    // Oblicz, ile elementów należy pominąć
+    const skip = (page - 1) * limit;
+
+    // Pobierz galerie z paginacją
+    const galleries = await Gallery.find({ userId: req.decoded._id }).skip(skip).limit(limit);
+
+    // Pobierz łączną liczbę galerii
+    const totalGalleries = await Gallery.countDocuments({ user: req.decoded._id });
+
+    // Oblicz łączną liczbę stron
+    const totalPages = Math.ceil(totalGalleries / limit);
+
+    // Zwróć dane galerii oraz informacje o paginacji
+    res.json({
+      galleries,
+      pagination: {
+        totalGalleries,
+        totalPages,
+        currentPage: page,
+        perPage: limit,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
 };
 
-exports.getGalleries = async (req, res) => {
+exports.getGalleriesByUpdateDate = async (req, res) => {
   try {
-    const galleries = await Gallery.find({ user: req.decoded._id });
-    res.json(galleries);
+    // Pobierz page i limit z zapytania, ustaw domyślne wartości
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 5;
+
+    // Oblicz, ile elementów należy pominąć
+    const skip = (page - 1) * limit;
+
+    // Pobierz galerie z paginacją
+    const galleries = await Gallery.find({ userId: req.decoded._id }).sort({ updatedAt: -1 }).skip(skip).limit(limit);
+
+    // Pobierz łączną liczbę galerii
+    const totalGalleries = await Gallery.countDocuments({ user: req.decoded._id });
+
+    // Oblicz łączną liczbę stron
+    const totalPages = Math.ceil(totalGalleries / limit);
+
+    // Zwróć dane galerii oraz informacje o paginacji
+    res.json({
+      galleries,
+      pagination: {
+        totalGalleries,
+        totalPages,
+        currentPage: page,
+        perPage: limit,
+      },
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }
@@ -128,23 +243,23 @@ exports.updateGallery = async (req, res) => {
       { _id: req.params.id },
       {
         $set: {
-          customer: req.body.customer,
+          customerId: req.body.customer,
           customerName: req.body.customerName,
           title: req.body.title,
           date: req.body.date,
           type: req.body.type,
-          price: req.body.price,
-          paid: req.body.paid,
-          shotsQt: req.body.shotsQt,
-          selectedShotsQt: req.body.selectedShotsQt,
-          markedShotsQt: req.body.markedShotsQt,
-          printingsQt: req.body.printingsQt,
+          amount: req.body.amount,
+          amountPaid: req.body.amountPaid,
+          shotsIncluded: req.body.shotsIncluded,
+          shotsSelected: req.body.shotsSelected,
+          shotsMarked: req.body.shotsMarked,
+          // printingsQt: req.body.printingsQt,
           additionalShotPrice: req.body.additionalShotPrice,
-          ifPrintings: req.body.ifPrintings,
+          isPrintingAvailable: req.body.isPrintingAvailable,
           additionalPrintings: req.body.additionalPrintings,
           additionalPrintingsPrice: req.body.additionalPrintingsPrice,
           status: req.body.status,
-          firstViewDate: req.body.firstViewDate,
+          viewDate: req.body.viewDate,
           photos: req.body.photos,
           editedPhotos: req.body.editedPhotos,
         },
@@ -167,7 +282,7 @@ exports.updateGalleryViewDate = async (req, res) => {
           viewDate: req.body.viewDate,
         },
       },
-      { upsert: true }
+      { upsert: true, timestamps: false }
     );
 
     res.json(gallery);
@@ -242,17 +357,17 @@ transporter.use(
 
 exports.sendGalleryToCustomer = async (req, res) => {
   try {
-    let organization_name = req.decoded.organization_name;
+    let organizationName = req.decoded.organizationName;
     let email = req.body.login;
-    let password = req.body.passwordUnsecure;
+    let password = req.body.passwordUnsecured;
 
     const mailOptions = {
       from: "Maslado <kontakt@maslado.com>",
       to: email,
-      subject: `${organization_name} udostępnił/a galerię ze zdjęciami do wyboru`,
+      subject: `${organizationName} udostępnił/a galerię ze zdjęciami do wyboru`,
       template: "send-to-client",
       context: {
-        organization_name: organization_name,
+        organization_name: organizationName,
         email: email,
         password: password,
       },

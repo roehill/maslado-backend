@@ -2,6 +2,9 @@ const User = require("../models/user");
 const Order = require("../models/order");
 const uuid = require("uuid");
 const { P24 } = require("@dimski/przelewy24");
+const nodemailer = require("nodemailer");
+const hbs = require("nodemailer-express-handlebars");
+const path = require("path");
 
 const p24 = new P24({
   prod: true, // Set to true for production environment
@@ -17,6 +20,27 @@ const p24 = new P24({
     language: "pl",
   },
 });
+
+// nodemailer
+let transporter = nodemailer.createTransport({
+  host: "smtp.hostinger.com",
+  port: 465,
+  secure: true, // upgrade later with STARTTLS
+  auth: {
+    user: process.env.AUTH_EMAIL,
+    pass: process.env.AUTH_PASS,
+  },
+});
+
+transporter.use(
+  "compile",
+  hbs({
+    viewEngine: {
+      defaultLayout: false,
+    },
+    viewPath: path.resolve("./views"),
+  })
+);
 
 exports.testAccess = async (req, res) => {
   try {
@@ -66,13 +90,12 @@ exports.registerTransaction = async (req, res) => {
       isVerified: false,
     });
 
-    // await order.save();
-
     const data = {
       sessionId: sessionId,
       amount: amount,
       description: description,
       email: userEmail,
+      client: `${userName} ${userSurname}`,
       urlReturn: `https://app.maslado.com/orders/return?sessionId=${sessionId}`,
       // urlReturn: `https://maslado.com/orders/return?orderId=${sessionId}`,
 
@@ -80,8 +103,6 @@ exports.registerTransaction = async (req, res) => {
       // urlStatus: `http://localhost:5000/api/orders/verify-transaction`,
       currency: "PLN",
     };
-
-    console.log(data);
 
     const transactionData = await p24.registerTransaction(data);
 
@@ -166,9 +187,51 @@ exports.getOrder = async (req, res) => {
 
 exports.getOrders = async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.decoded._id });
+    const orders = await Order.find({ userId: req.decoded._id, isVerified: true });
 
     res.json(orders);
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.requestInvoice = async (req, res) => {
+  try {
+    const { orderId, email } = req.body;
+
+    const updatedOrder = await Order.findOneAndUpdate(
+      { _id: orderId },
+      {
+        $set: {
+          invoice: true,
+        },
+      },
+      { upsert: true }
+    );
+
+    const mailOptions = {
+      from: "Maslado <kontakt@maslado.com>",
+      to: "roehilldev@gmail.com",
+      subject: `Zgłoszono potrzebę faktury`,
+      template: "invoice-request",
+      context: {
+        email: email,
+      },
+      attachments: [
+        {
+          filename: "logo.png",
+          path: path.resolve("./views/logo.png"),
+          cid: "imagename",
+        },
+      ],
+    };
+
+    transporter.sendMail(mailOptions);
+
+    res.json({
+      message: `Wysłano prośbę o dostarczenie faktury. Zostanie wysłana na adres email ${email}`,
+      updatedOrder,
+    });
   } catch (error) {
     return res.status(500).json({ message: error.message });
   }

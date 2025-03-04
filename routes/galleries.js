@@ -3,6 +3,7 @@ const verifyToken = require("../middlewares/verify-token");
 const {
   createGallery,
   getGalleries,
+  getGalleriesByUpdateDate,
   getSelectedGalleries,
   getGallery,
   deleteGallery,
@@ -25,6 +26,9 @@ router.get("/customer", verifyToken, getCustomerGalleries);
 
 // GET ALL GALLERIES
 router.get("/", verifyToken, getGalleries);
+
+// GET GALLERIES SORT BY UPDATE DATE
+router.get("/byUpdateDate", verifyToken, getGalleriesByUpdateDate);
 
 // DOWNLOAD RESUME
 router.post("/download-resume/:id", verifyToken, writeResume);

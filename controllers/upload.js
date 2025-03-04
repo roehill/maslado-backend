@@ -131,7 +131,7 @@ exports.downloadPhotos = async (req, res) => {
 
     let user = await User.findOne({ _id: userID }).select("-password");
 
-    const path = user.organization_name;
+    const path = user.email;
 
     for (const photo of photos) {
       images.push(`images/${path}/${photo.id}.jpg`);
@@ -168,6 +168,8 @@ exports.downloadPhotos = async (req, res) => {
 exports.deletePhotos = async (req, res) => {
   try {
     const { deletedPhotos, galleryStatus, path } = req.body;
+
+    console.log(deletedPhotos, galleryStatus, path);
 
     if (galleryStatus === "new") {
       for (const photo of deletedPhotos) {

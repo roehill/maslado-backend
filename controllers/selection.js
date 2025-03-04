@@ -4,7 +4,7 @@ const Selection = require("../models/selection");
 // CREATE SELECTION
 exports.createSelection = async (req, res) => {
   try {
-    const { gallery, photos } = req.body;
+    const { galleryId, photos } = req.body;
 
     if (photos.length <= 0) {
       return res.status(400).json({
@@ -14,9 +14,10 @@ exports.createSelection = async (req, res) => {
     }
 
     const selection = new Selection({
-      gallery: gallery,
-      photos: photos,
+      galleryId: galleryId,
+      selectedPhotos: photos,
     });
+    console.log(selection);
 
     await selection.save();
 
@@ -35,7 +36,7 @@ exports.createSelection = async (req, res) => {
 // FETCH SELECTIONS BY GALLERY ID
 exports.fetchSelections = async (req, res) => {
   try {
-    const selections = await Selection.find({ gallery: req.params.id });
+    const selections = await Selection.find({ galleryId: req.params.id });
     res.json(selections);
   } catch (error) {
     return res.status(500).json({ message: error.message });

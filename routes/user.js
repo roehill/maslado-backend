@@ -13,6 +13,7 @@ const {
   validateResetCode,
   changePassword,
   editUser,
+  editAvatar,
 } = require("../controllers/user");
 
 // SIGN UP
@@ -52,5 +53,8 @@ router.put("/change-password", changePassword);
 
 // EDIT
 router.put("/", verifyToken, editUser);
+
+// EDIT AVATAR
+router.put("/avatar", verifyToken, editAvatar);
 
 module.exports = router;

@@ -10,7 +10,7 @@ const OrderSchema = new Schema(
     address: { type: String, required: true },
     city: { type: String, required: true },
     zipcode: { type: String, required: true },
-    taxNumber: { type: String, required: true },
+    taxNumber: { type: String, required: false },
     isVerified: { type: Boolean, required: true },
     sessionId: { type: String, required: true },
     type: { type: String, required: true },
@@ -20,6 +20,7 @@ const OrderSchema = new Schema(
     currency: { type: String, required: true },
     description: { type: String, required: true },
     orderId: { type: Number, required: false },
+    invoice: { type: Boolean, required: false },
   },
   { timestamps: true }
 );
