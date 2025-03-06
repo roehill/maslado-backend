@@ -321,7 +321,7 @@ exports.deleteGallery = async (req, res) => {
 exports.getCustomerGalleries = async (req, res) => {
   try {
     const galleries = await Gallery.find({
-      customer: req.decoded._id,
+      customerId: req.decoded._id,
     });
 
     // const galleriesSentToClient = galleries.filter(

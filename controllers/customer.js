@@ -210,7 +210,7 @@ exports.deleteCustomer = async (req, res) => {
 exports.getCustomerGalleries = async (req, res) => {
   try {
     const galleries = await Gallery.find({
-      customer: req.params.id,
+      customerId: req.params.id,
     });
 
     res.status(200).json(galleries);
