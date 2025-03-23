@@ -15,11 +15,7 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server started on port ${PORT}`));
 
 // CORS - w przyszlosci zmienic na jedną domenę
-app.use(
-  cors({
-    origin: "*",
-  })
-);
+app.use(cors());
 
 // MIDDLEWARES
 app.use(bodyParser.json({ limit: "50mb" }));
@@ -66,6 +62,9 @@ app.use("/api/users", usersRoutes);
 
 const userOptionsRoutes = require("./routes/userOptions");
 app.use("/api/user-options", userOptionsRoutes);
+
+const userPaymentsDetailsRoutes = require("./routes/userPaymentsDetails");
+app.use("/api/user-payments-details", userPaymentsDetailsRoutes);
 
 const customersRoutes = require("./routes/customers");
 app.use("/api/customers", customersRoutes);

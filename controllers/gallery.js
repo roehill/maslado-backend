@@ -76,6 +76,12 @@ exports.createGallery = async (req, res) => {
     );
     if (!user) throw new Error("Brak dostępnych galerii, wykup pakiet.");
 
+    let limit = 500;
+
+    if (user.accountType === "free") {
+      limit = 200;
+    }
+
     // Tworzę nową galerię
     const newGallery = new Gallery({
       userId: req.decoded._id,
@@ -89,6 +95,7 @@ exports.createGallery = async (req, res) => {
       shotsIncluded: shotsIncluded,
       shotsSelected: 0,
       shotsMarked: 0,
+      photosLimit: limit,
       additionalShotPrice: additionalShotPrice,
       isPrintingAvailable: isPrintingsAvailable,
       additionalPrintings: additionalPrintings,
@@ -106,56 +113,6 @@ exports.createGallery = async (req, res) => {
   } finally {
     session.endSession();
   }
-
-  // try {
-  //   let newGallery = new Gallery();
-
-  //   newGallery.user = req.decoded._id;
-  //   newGallery.customer = req.body.customer;
-  //   newGallery.customerName = req.body.customerName;
-  //   newGallery.title = req.body.title;
-  //   newGallery.date = req.body.date;
-  //   newGallery.type = req.body.type;
-  //   newGallery.price = req.body.price;
-  //   newGallery.paid = req.body.paid;
-  //   newGallery.shotsQt = req.body.shotsQt;
-  //   newGallery.selectedShotsQt = 0;
-  //   newGallery.markedShotsQt = 0;
-  //   newGallery.additionalShotPrice = req.body.additionalShotPrice;
-  //   newGallery.ifPrintings = req.body.ifPrintings;
-  //   newGallery.additionalPrintings = req.body.additionalPrintings;
-  //   newGallery.photos = req.body.photos;
-  //   newGallery.status = "new";
-
-  //   // Dodaję klientowi ID tworzonej właśnie galerii
-  //   await Customer.findOneAndUpdate({ _id: req.body.customer }, { $push: { gallery: newGallery.id } });
-
-  //   // Sprawdzam, czy user ma jeszcze sesje do wykorzystania
-  //   let availableSessions = 0;
-  //   await User.findOne({ _id: req.decoded._id }).then((data) => {
-  //     return (availableSessions = data.available_sessions);
-  //   });
-
-  //   // Jeśli user nie ma juz sesji do wykorzystania nie moze utworzyć nowej galerii
-  //   if (availableSessions <= 0) {
-  //     return res.status(402).json({ message: "Brak dostępnych sesji. Wykup pakiet." });
-  //   } else {
-  //     // Jeśli ma dostępne sesje odejmuję jedną
-  //     await User.findOneAndUpdate(
-  //       { _id: req.decoded._id },
-  //       {
-  //         $set: {
-  //           available_sessions: availableSessions - 1,
-  //         },
-  //       }
-  //     );
-  //     // Zapisuję nową galerię
-  //     await newGallery.save();
-  //     res.json(newGallery);
-  //   }
-  // } catch (error) {
-  //   return res.status(500).json({ message: error.message });
-  // }
 };
 
 exports.getGalleries = async (req, res) => {
@@ -428,17 +385,17 @@ exports.sendGalleryToPhotographer = async (req, res) => {
 
 exports.sendEditedGalleryToCustomer = async (req, res) => {
   try {
-    let organization_name = req.decoded.organization_name;
+    let organizationName = req.decoded.organizationName;
     let email = req.body.login;
     let password = req.body.passwordUnsecure;
 
     const mailOptions = {
       from: "Maslado <kontakt@maslado.com>",
       to: email,
-      subject: `${organization_name} udostępnił/a galerię ze zdjęciami do pobrania`,
+      subject: `${organizationName} udostępnił/a galerię ze zdjęciami do pobrania`,
       template: "send-edited-to-client",
       context: {
-        organization_name: organization_name,
+        organization_name: organizationName,
         email: email,
         password: password,
       },

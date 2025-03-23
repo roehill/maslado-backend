@@ -24,8 +24,10 @@ exports.updateUserOptions = async (req, res) => {
 
 exports.getUserOptions = async (req, res) => {
   try {
+    console.log(req.params.userID);
+
     // Znajdź opcje użytkownika na podstawie jego ID
-    const userOptions = await UserOptions.findOne({ user: req.params.userID });
+    const userOptions = await UserOptions.findOne({ userId: req.params.userID });
 
     // Jeśli rekord nie istnieje, zwróć odpowiedni komunikat
     if (!userOptions) {

@@ -4,6 +4,7 @@ const hbs = require("nodemailer-express-handlebars");
 const path = require("path");
 const Payment = require("../models/payment");
 const User = require("../models/user");
+const UserPaymentsDetails = require("../models/userPaymentsDetails");
 const Customer = require("../models/customer");
 const Gallery = require("../models/gallery");
 const { log } = require("console");
@@ -31,14 +32,14 @@ transporter.use(
 
 exports.testAccess = async (req, res) => {
   try {
-    const { p24ID, APIkey, CRCkey } = req.body;
+    const { p24Id, apiKey, crcKey } = req.body;
 
     const p24 = new P24({
       prod: true, // Set to true for production environment
-      merchantId: p24ID,
-      posId: p24ID,
-      apiKey: APIkey,
-      crc: CRCkey,
+      merchantId: p24Id,
+      posId: p24Id,
+      apiKey: apiKey,
+      crc: crcKey,
       defaultValues: {
         currency: "PLN",
         country: "PL",
@@ -60,16 +61,16 @@ exports.testAccess = async (req, res) => {
 
 exports.registerPayment = async (req, res) => {
   try {
-    const { customerEmail, galleryId, sessionId, price, amount, description, userId } = req.body;
+    const { customerEmail, galleryId, sessionId, price, amount, description, userId, client } = req.body;
 
-    const user = await User.findOne({ _id: userId });
+    const userPaymentsDetail = await UserPaymentsDetails.findOne({ userId: userId });
 
     const p24 = new P24({
       prod: true, // Set to true for production environment
-      merchantId: user.p24ID,
-      posId: user.p24ID,
-      apiKey: user.APIkey,
-      crc: user.CRCkey,
+      merchantId: userPaymentsDetail.p24Id,
+      posId: userPaymentsDetail.p24Id,
+      apiKey: userPaymentsDetail.apiKey,
+      crc: userPaymentsDetail.crcKey,
       defaultValues: {
         currency: "PLN",
         country: "PL",
@@ -96,6 +97,7 @@ exports.registerPayment = async (req, res) => {
       amount: amount,
       description: description,
       email: customerEmail,
+      client: client,
       urlReturn: `http://localhost:3000/customer-panel`,
       // urlStatus: `https://www.maslado-api.com/api/orders/verify-transaction`,
       urlStatus: `https://www.maslado-api.com/api/payments/verify-payment`,
@@ -120,16 +122,19 @@ exports.registerPayment = async (req, res) => {
 
 exports.verifyPayment = async (req, res) => {
   try {
+    console.log("ASd");
+
     const { sessionId, orderId, amount, currency, sign } = req.body;
 
     const user = await User.findOne({ sessionId: sessionId });
+    const userPaymentsDetails = await UserPaymentsDetails({ userId: user._id });
 
     const p24 = new P24({
       prod: true, // Set to true for production environment
-      merchantId: user.p24ID,
-      posId: user.p24ID,
-      apiKey: user.APIkey,
-      crc: user.CRCkey,
+      merchantId: userPaymentsDetails.p24Id,
+      posId: userPaymentsDetails.p24Id,
+      apiKey: userPaymentsDetails.apiKey,
+      crc: userPaymentsDetails.crcKey,
       defaultValues: {
         currency: "PLN",
         country: "PL",
@@ -142,7 +147,7 @@ exports.verifyPayment = async (req, res) => {
     // Weryfikacja transakcji w Przelewy24
     const verifyData = {
       sessionId: sessionId,
-      orderId: Number(orderId),
+      orderId: orderId,
       amount: Number(amount),
       currency: currency,
     };

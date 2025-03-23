@@ -132,8 +132,6 @@ exports.verifyTransaction = async (req, res) => {
       currency: currency,
     };
 
-    console.log(verifyData);
-
     const isTransactionVerified = await p24.verifyTransaction(verifyData);
 
     console.log(`isTransactionVerified : ${isTransactionVerified}`);
@@ -156,7 +154,8 @@ exports.verifyTransaction = async (req, res) => {
           { _id: order.userId },
           {
             $set: {
-              available_sessions: user.available_sessions + order.galleriesQuantity,
+              availableSessions: user.availableSessions + order.galleriesQuantity,
+              accountType: "premium",
             },
           },
           { upsert: true }

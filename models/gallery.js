@@ -34,6 +34,7 @@ const GallerySchema = new Schema(
         amount: { type: Number },
       },
     ],
+    photosLimit: { type: Number, required: true },
     photos: [
       {
         id: { type: String, required: true },
