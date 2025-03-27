@@ -78,6 +78,9 @@ app.use("/api/orders", ordersRoutes);
 const paymentsRoutes = require("./routes/payments");
 app.use("/api/payments", paymentsRoutes);
 
+const eventsRoutes = require("./routes/events");
+app.use("/api/events", eventsRoutes);
+
 const resumeRoutes = require("./routes/resumes");
 app.use("/api/resumes", resumeRoutes);
 

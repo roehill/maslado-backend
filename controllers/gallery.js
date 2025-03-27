@@ -128,7 +128,7 @@ exports.getGalleries = async (req, res) => {
     const galleries = await Gallery.find({ userId: req.decoded._id }).skip(skip).limit(limit);
 
     // Pobierz łączną liczbę galerii
-    const totalGalleries = await Gallery.countDocuments({ user: req.decoded._id });
+    const totalGalleries = await Gallery.countDocuments({ userId: req.decoded._id });
 
     // Oblicz łączną liczbę stron
     const totalPages = Math.ceil(totalGalleries / limit);
