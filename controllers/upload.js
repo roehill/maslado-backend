@@ -126,47 +126,6 @@ exports.uploadAvatar = async (req, res) => {
   });
 };
 
-// exports.downloadPhotos = async (req, res) => {
-//   try {
-//     const { id, photos, galleryTitle, userID } = req.body;
-//     const images = [];
-
-//     let user = await User.findOne({ _id: userID }).select("-password");
-
-//     const path = user.email;
-
-//     for (const photo of photos) {
-//       images.push(`images/${path}/${photo.id}.jpg`);
-//     }
-
-//     const img = zip.folder("sesja fotograficzna");
-
-//     for (const image of images) {
-//       const imageData = fs.readFileSync(image);
-//       img.file(image, imageData);
-//     }
-
-//     // Sprawdzam czy istnieje folder, jeśli nie to go tworzę
-//     const dir = `./archives/${path}`;
-//     if (!fs.existsSync(dir)) {
-//       fs.mkdirSync(dir, { recursive: true });
-//     }
-
-//     zip
-//       .generateNodeStream({ type: "nodebuffer", streamFiles: true })
-//       .pipe(fs.createWriteStream(`archives/${path}/${id}.zip`))
-//       .on("finish", function () {
-//         console.log("sample.zip written.");
-//       });
-
-//     return res.status(200).json({
-//       url: `${process.env.BASE_URL}/uploads/archives/${path}/${id}.zip`,
-//     });
-//   } catch (error) {
-//     return res.status(500).json({ success: false, message: error.message });
-//   }
-// };
-
 exports.downloadPhotos = async (req, res) => {
   try {
     const { id, photos, galleryTitle, userID } = req.body;

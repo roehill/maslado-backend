@@ -51,6 +51,75 @@ exports.testAccess = async (req, res) => {
   }
 };
 
+// exports.registerTransaction = async (req, res) => {
+//   try {
+//     const {
+//       userName,
+//       userEmail,
+//       userSurname,
+//       address,
+//       city,
+//       zipcode,
+//       taxNumber,
+//       sessionId,
+//       type,
+//       galleriesQuantity,
+//       price,
+//       amount,
+//       description,
+//     } = req.body;
+
+//     const order = new Order({
+//       // Informacje o userze
+//       userId: req.decoded._id,
+//       userName: userName,
+//       userEmail: userEmail,
+//       userSurname: userSurname,
+//       address: address,
+//       city: city,
+//       zipcode: zipcode,
+//       taxNumber: taxNumber,
+//       // Informacje o zamówieniu
+//       sessionId: sessionId,
+//       type: type,
+//       galleriesQuantity: galleriesQuantity,
+//       price: price,
+//       amount: amount, // amount to cena podana w groszach
+//       description: description,
+//       currency: "PLN",
+//       isVerified: false,
+//     });
+
+//     const data = {
+//       sessionId: sessionId,
+//       amount: amount,
+//       description: description,
+//       email: userEmail,
+//       client: `${userName} ${userSurname}`,
+//       urlReturn: `https://app.maslado.com/orders/return?sessionId=${sessionId}`,
+//       // urlReturn: `https://maslado.com/orders/return?orderId=${sessionId}`,
+
+//       urlStatus: `https://www.maslado-api.com/api/orders/verify-transaction`,
+//       // urlStatus: `http://localhost:5000/api/orders/verify-transaction`,
+//       currency: "PLN",
+//     };
+
+//     const transactionData = await p24.registerTransaction(data);
+
+//     if (transactionData) {
+//       await order.save();
+//       return res.status(200).json({
+//         order,
+//         token: transactionData.token,
+//       });
+//     } else {
+//       return res.status(500).json("Nie udało się stworzyć zamówienia.");
+//     }
+//   } catch (error) {
+//     return res.status(500).json({ message: error.message });
+//   }
+// };
+
 exports.registerTransaction = async (req, res) => {
   try {
     const {
