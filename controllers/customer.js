@@ -209,6 +209,8 @@ exports.deleteCustomer = async (req, res) => {
 // GET CUSTOMER GALLERIES
 exports.getCustomerGalleries = async (req, res) => {
   try {
+    console.log("req.params.id", req.params.id);
+
     const galleries = await Gallery.find({
       customerId: req.params.id,
     });

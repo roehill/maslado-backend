@@ -93,7 +93,7 @@ const sendVerificationEmail = ({ _id, email, name }, res) => {
 exports.registerUser = async (req, res) => {
   try {
     // Enter validation
-    const { email, password, organization, name } = req.body;
+    const { email, password, organizationName, name } = req.body;
 
     const { error } = validateRegisterUser(req.body);
     if (error) {
@@ -108,7 +108,7 @@ exports.registerUser = async (req, res) => {
 
     // Create user
     const newUser = new User({
-      organizationName: organization,
+      organizationName: organizationName,
       name,
       email,
       password,
@@ -121,7 +121,6 @@ exports.registerUser = async (req, res) => {
       userId: newUser._id,
       paymentsMessage: "",
     });
-    console.log(newUserOptions);
 
     const newUserPaymentsDetails = new UserPaymentsDetails({
       userId: newUser._id,

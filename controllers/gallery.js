@@ -115,20 +115,28 @@ exports.createGallery = async (req, res) => {
   }
 };
 
-exports.getGalleries = async (req, res) => {
+exports.getGalleriesPagination = async (req, res) => {
   try {
     // Pobierz page i limit z zapytania, ustaw domyślne wartości
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 5;
+    const search = req.query.search || "";
+
+    // Budujemy query
+    const query = {
+      userId: req.decoded._id,
+      $or: [{ title: { $regex: search, $options: "i" } }, { customerName: { $regex: search, $options: "i" } }],
+    };
 
     // Oblicz, ile elementów należy pominąć
     const skip = (page - 1) * limit;
 
-    // Pobierz galerie z paginacją
-    const galleries = await Gallery.find({ userId: req.decoded._id }).skip(skip).limit(limit);
+    // Pobierz galerie z paginacją i filtrem
+    const galleries = await Gallery.find(query).skip(skip).limit(limit).sort({ createdAt: -1 });
 
     // Pobierz łączną liczbę galerii
-    const totalGalleries = await Gallery.countDocuments({ userId: req.decoded._id });
+    // const totalGalleries = await Gallery.countDocuments({ userId: req.decoded._id });
+    const totalGalleries = await Gallery.countDocuments(query);
 
     // Oblicz łączną liczbę stron
     const totalPages = Math.ceil(totalGalleries / limit);
@@ -142,6 +150,18 @@ exports.getGalleries = async (req, res) => {
         currentPage: page,
         perPage: limit,
       },
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+};
+
+exports.getGalleries = async (req, res) => {
+  try {
+    const galleries = await Gallery.find({ userId: req.decoded._id }).sort({ createdAt: -1 });
+
+    res.json({
+      galleries,
     });
   } catch (error) {
     return res.status(500).json({ message: error.message });
