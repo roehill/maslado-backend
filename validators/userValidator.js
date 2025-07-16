@@ -7,7 +7,7 @@ const registerSchema = Joi.object({
     .valid(Joi.ref("password"))
     .required()
     .messages({ "any.only": "Hasła muszą być identyczne" }),
-  organization: Joi.string().required(),
+  organizationName: Joi.string().required(),
   name: Joi.string().required(),
 });
 
